@@ -8,7 +8,7 @@ local ok, parsers = pcall(require, "nvim-treesitter.parsers")
 if ok and type(parsers.get_parser_configs) == "function" then
   parsers.get_parser_configs().sema = {
     install_info = {
-      url = "https://github.com/HelgeSverre/tree-sitter-sema",
+      url = "https://github.com/sema-lisp/tree-sitter-sema",
       files = { "src/parser.c", "src/scanner.c" },
       branch = "main",
     },

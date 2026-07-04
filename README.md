@@ -2,7 +2,7 @@
 
 Neovim support for [Sema](https://sema-lang.com) (`.sema`) — a Lisp dialect with
 first-class LLM primitives. Provides tree-sitter syntax highlighting (via
-[`tree-sitter-sema`](https://github.com/HelgeSverre/tree-sitter-sema)) and LSP
+[`tree-sitter-sema`](https://github.com/sema-lisp/tree-sitter-sema)) and LSP
 integration with the built-in `sema lsp` server.
 
 - **Homepage**: [sema-lang.com](https://sema-lang.com)
@@ -98,7 +98,7 @@ adding to `lua/nvim-treesitter/parsers.lua` (master branch):
 ```lua
 sema = {
   install_info = {
-    url = "https://github.com/HelgeSverre/tree-sitter-sema",
+    url = "https://github.com/sema-lisp/tree-sitter-sema",
     files = { "src/parser.c", "src/scanner.c" },
     branch = "main",
   },
