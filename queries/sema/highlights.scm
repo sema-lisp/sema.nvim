@@ -19,8 +19,12 @@
 (boolean) @constant.builtin
 (character) @constant.character
 (string) @string
-(escape_sequence) @string.escape
+(regex) @string.regexp
 (keyword) @string.special.symbol
+
+; Reader extensions: deref (@expr) and shebang (#!...)
+(deref "@" @operator)
+(shebang) @comment
 
 ; =====================================================================
 ; COMMENTS
