@@ -1,17 +1,9 @@
-# Sema for Neovim
+# sema.nvim
 
 Neovim support for [Sema](https://sema-lang.com) (`.sema`) — a Lisp dialect with
-first-class LLM primitives. Provides tree-sitter syntax highlighting (via
-[`tree-sitter-sema`](https://github.com/sema-lisp/tree-sitter-sema)) and LSP
-integration with the built-in `sema lsp` server.
-
-- **Homepage**: [sema-lang.com](https://sema-lang.com)
-- **Source**: [github.com/HelgeSverre/sema](https://github.com/HelgeSverre/sema)
-
-This directory is a self-contained Neovim plugin: it detects the `sema`
-filetype, registers the tree-sitter parser with `nvim-treesitter`, and ships the
-highlight queries. It does **not** auto-start the LSP — wire that up yourself
-(see below) so it stays out of your way if you only want highlighting.
+first-class LLM primitives. Ships filetype detection, tree-sitter syntax
+highlighting (via [`tree-sitter-sema`](https://github.com/sema-lisp/tree-sitter-sema)),
+and opt-in wiring for the built-in `sema lsp` language server.
 
 ## Install
 
@@ -19,39 +11,40 @@ highlight queries. It does **not** auto-start the LSP — wire that up yourself
 
 ```lua
 {
-  "HelgeSverre/sema",
-  -- only load the Neovim plugin subdirectory of the monorepo
-  config = function(plugin)
-    vim.opt.rtp:append(plugin.dir .. "/editors/nvim")
-  end,
+  "sema-lisp/sema.nvim",
   ft = "sema",
   dependencies = { "nvim-treesitter/nvim-treesitter" },
 }
 ```
 
-Then `:TSInstall sema` once to fetch and compile the grammar. Highlighting works
-on the next `.sema` buffer.
-
 ### packer.nvim
 
 ```lua
 use({
-  "HelgeSverre/sema",
-  rtp = "editors/nvim",
+  "sema-lisp/sema.nvim",
   requires = { "nvim-treesitter/nvim-treesitter" },
 })
 ```
 
-### Manual
+Then run `:TSInstall sema` once to fetch and compile the grammar (it uses the
+pinned [`sema-lisp/tree-sitter-sema`](https://github.com/sema-lisp/tree-sitter-sema)
+url registered by this plugin). Highlighting works on the next `.sema` buffer.
 
-Symlink or copy `editors/nvim/` onto your `runtimepath` (e.g. into
-`~/.config/nvim/pack/plugins/start/sema/`), then `:TSInstall sema`.
+## Features
 
-## LSP
+- **Filetype detection** — `.sema` files are associated with the `sema`
+  filetype.
+- **Tree-sitter highlighting** — registers the `tree-sitter-sema` parser with
+  `nvim-treesitter` so `:TSInstall sema` just works, and ships the highlight
+  queries (`queries/sema/highlights.scm`) that nvim-treesitter picks up from the
+  runtimepath.
+- **LSP (opt-in)** — Sema ships a built-in language server (`sema lsp`):
+  completions, hover, go-to-definition, references, rename, signature help,
+  diagnostics, document symbols, and code lens. This plugin does **not**
+  auto-start it — wire it up yourself (see below) so it stays out of your way if
+  you only want highlighting.
 
-Sema ships a built-in language server (`sema lsp`): completions, hover,
-go-to-definition, references, rename, signature help, diagnostics, document
-symbols, and code lens.
+## LSP setup
 
 ### Neovim ≥ 0.11 (native `vim.lsp`, no plugin)
 
@@ -66,7 +59,8 @@ vim.lsp.enable("sema")
 
 ### nvim-lspconfig
 
-Until an upstream `sema` config ships (see below), register it inline:
+Until an upstream `sema` config ships (see [Roadmap](#roadmap)), register it
+inline:
 
 ```lua
 local configs = require("lspconfig.configs")
@@ -86,42 +80,27 @@ end
 lspconfig.sema.setup({})
 ```
 
-## Contributing to the registries (maintainers)
+## Requirements
 
-These make `:TSInstall sema` and `lspconfig.sema` work out-of-the-box for
-everyone, without this plugin:
+- **Neovim** with [`nvim-treesitter`](https://github.com/nvim-treesitter/nvim-treesitter)
+  (for highlighting).
+- **The `sema` binary** on your `PATH` (for LSP, and to run Sema programs).
+  Install from [sema-lang.com](https://sema-lang.com) — e.g. `cargo install sema`
+  or `npm install -g @sema-lang/cli`.
 
-**1. nvim-treesitter** — PR to
-[`nvim-treesitter/nvim-treesitter`](https://github.com/nvim-treesitter/nvim-treesitter),
-adding to `lua/nvim-treesitter/parsers.lua` (master branch):
+## Roadmap
 
-```lua
-sema = {
-  install_info = {
-    url = "https://github.com/sema-lisp/tree-sitter-sema",
-    files = { "src/parser.c", "src/scanner.c" },
-    branch = "main",
-  },
-  maintainers = { "@HelgeSverre" },
-  tier = 3,
-},
-```
+- **Upstream `:TSInstall sema` without this plugin** — a PR to
+  [`nvim-treesitter/nvim-treesitter`](https://github.com/nvim-treesitter/nvim-treesitter)
+  adding `sema` to `lua/nvim-treesitter/parsers.lua` (with the `queries/sema/*.scm`
+  copied in), so the parser installs from the registry directly.
+- **Upstream `lspconfig.sema`** — a PR to
+  [`neovim/nvim-lspconfig`](https://github.com/neovim/nvim-lspconfig) adding
+  `lsp/sema.lua`, so the LSP config ships out of the box.
 
-Copy `queries/sema/*.scm` into the nvim-treesitter `queries/sema/` directory in
-the same PR.
+## Links
 
-**2. nvim-lspconfig** — PR to
-[`neovim/nvim-lspconfig`](https://github.com/neovim/nvim-lspconfig) adding
-`lsp/sema.lua`:
-
-```lua
-return {
-  cmd = { "sema", "lsp" },
-  filetypes = { "sema" },
-  root_markers = { "sema.toml", ".git" },
-}
-```
-
-**3. mason.nvim** (optional) — to distribute the `sema` binary itself, submit a
-package to [`mason-org/mason-registry`](https://github.com/mason-org/mason-registry)
-pointing at the crates.io / npm release.
+- **Homepage**: [sema-lang.com](https://sema-lang.com)
+- **Playground**: [sema.run](https://sema.run)
+- **Language**: [github.com/HelgeSverre/sema](https://github.com/HelgeSverre/sema)
+- **Grammar**: [github.com/sema-lisp/tree-sitter-sema](https://github.com/sema-lisp/tree-sitter-sema)
