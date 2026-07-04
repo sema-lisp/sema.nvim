@@ -47,47 +47,30 @@ url registered by this plugin). Highlighting works on the next `.sema` buffer.
   `nvim-treesitter` so `:TSInstall sema` just works, and ships the highlight
   queries (`queries/sema/highlights.scm`) that nvim-treesitter picks up from the
   runtimepath.
-- **LSP (opt-in)** — Sema ships a built-in language server (`sema lsp`):
-  completions, hover, go-to-definition, references, rename, signature help,
-  diagnostics, document symbols, and code lens. This plugin does **not**
-  auto-start it — wire it up yourself (see below) so it stays out of your way if
-  you only want highlighting.
+- **LSP (automatic)** — the plugin registers and enables the built-in language
+  server (`sema lsp`) on Neovim ≥ 0.11; open a `.sema` file and it attaches with
+  no config. Completions, hover, go-to-definition, references, rename, signature
+  help, diagnostics, document symbols, and code lens. No `nvim-lspconfig`
+  dependency.
+- **Debugging (DAP, optional)** — if [`nvim-dap`](https://github.com/mfussenegger/nvim-dap)
+  is installed, the plugin registers the `sema` debug adapter (`sema dap`) with a
+  "Launch Sema file" configuration.
 
-## LSP setup
+## Language server
 
-### Neovim ≥ 0.11 (native `vim.lsp`, no plugin)
+Automatic — no setup. Opening a `.sema` file starts `sema lsp` (resolved from
+your `PATH`). On Neovim ≥ 0.11 this uses the native `vim.lsp.config` /
+`vim.lsp.enable`; on older versions the plugin falls back to a `FileType`
+autocmd. To customize (e.g. disable a capability), override with your own
+`vim.lsp.config("sema", …)` after the plugin loads.
 
-```lua
-vim.lsp.config.sema = {
-  cmd = { "sema", "lsp" },
-  filetypes = { "sema" },
-  root_markers = { "sema.toml", ".git" },
-}
-vim.lsp.enable("sema")
-```
+## Debugging (DAP)
 
-### nvim-lspconfig
-
-Until an upstream `sema` config ships (see [Roadmap](#roadmap)), register it
-inline:
-
-```lua
-local configs = require("lspconfig.configs")
-local lspconfig = require("lspconfig")
-
-if not configs.sema then
-  configs.sema = {
-    default_config = {
-      cmd = { "sema", "lsp" },
-      filetypes = { "sema" },
-      root_dir = lspconfig.util.root_pattern("sema.toml", ".git"),
-      single_file_support = true,
-    },
-  }
-end
-
-lspconfig.sema.setup({})
-```
+Install [`nvim-dap`](https://github.com/mfussenegger/nvim-dap); the plugin then
+registers the adapter automatically. Set a breakpoint
+(`:lua require('dap').toggle_breakpoint()`) and start with
+`:lua require('dap').continue()` → **Launch Sema file**. The adapter runs
+`sema dap` over stdio.
 
 ## Requirements
 
