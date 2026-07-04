@@ -1,9 +1,18 @@
-# sema.nvim
+<div align="center">
 
-Neovim support for [Sema](https://sema-lang.com) (`.sema`) — a Lisp dialect with
-first-class LLM primitives. Ships filetype detection, tree-sitter syntax
-highlighting (via [`tree-sitter-sema`](https://github.com/sema-lisp/tree-sitter-sema)),
-and opt-in wiring for the built-in `sema lsp` language server.
+<img src="https://sema-lang.com/logo.svg" alt="Sema" height="64">
+
+# Sema for Neovim
+
+**[Sema](https://sema-lang.com) support for [Neovim](https://neovim.io)** — a Lisp with first-class LLM primitives.
+
+[![CI](https://img.shields.io/github/actions/workflow/status/sema-lisp/sema.nvim/ci.yml?branch=main&label=CI&logo=github)](https://github.com/sema-lisp/sema.nvim/actions)
+[![License](https://img.shields.io/github/license/sema-lisp/sema.nvim?color=c8a855)](LICENSE)
+[![Website](https://img.shields.io/badge/website-sema--lang.com-c8a855)](https://sema-lang.com)
+
+</div>
+
+Neovim support for Sema (`.sema`) source files: filetype detection, tree-sitter syntax highlighting (via [`tree-sitter-sema`](https://github.com/sema-lisp/tree-sitter-sema)), and opt-in wiring for the built-in `sema lsp` language server.
 
 ## Install
 
@@ -100,7 +109,12 @@ lspconfig.sema.setup({})
 
 ## Links
 
-- **Homepage**: [sema-lang.com](https://sema-lang.com)
-- **Playground**: [sema.run](https://sema.run)
-- **Language**: [github.com/HelgeSverre/sema](https://github.com/HelgeSverre/sema)
-- **Grammar**: [github.com/sema-lisp/tree-sitter-sema](https://github.com/sema-lisp/tree-sitter-sema)
+- **Website** — [sema-lang.com](https://sema-lang.com)
+- **Playground** — [sema.run](https://sema.run)
+- **Documentation** — [sema-lang.com/docs](https://sema-lang.com/docs/)
+- **Grammar** — [tree-sitter-sema](https://github.com/sema-lisp/tree-sitter-sema)
+- **Repository** — [sema-lisp/sema.nvim](https://github.com/sema-lisp/sema.nvim)
+
+## License
+
+[MIT](LICENSE) © [Helge Sverre](https://github.com/HelgeSverre)
