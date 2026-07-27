@@ -81,13 +81,13 @@
 ; =====================================================================
 
 ; (define name value)
-(list . (symbol) @_f . (symbol) @variable (#eq? @_f "define"))
+(list . (symbol) @_f . (symbol) @variable (#any-of? @_f "define" "def"))
 
 ; (set! name value)
 (list . (symbol) @_f . (symbol) @variable (#eq? @_f "set!"))
 
 ; (defun name ...)
-(list . (symbol) @_f . (symbol) @function (#eq? @_f "defun"))
+(list . (symbol) @_f . (symbol) @function (#any-of? @_f "defun" "defn"))
 
 ; (defmacro name ...)
 (list . (symbol) @_f . (symbol) @function (#eq? @_f "defmacro"))
@@ -112,7 +112,7 @@
 
 ; (define (name x y) body)
 (list . (symbol) @_f . (list . (symbol) @function (symbol) @variable.parameter)
-  (#eq? @_f "define"))
+  (#any-of? @_f "define" "def"))
 
 ; =====================================================================
 ; BUILTIN FUNCTIONS
@@ -285,8 +285,10 @@
 
 (list . (symbol) @keyword
   (#any-of? @keyword
-    "define" "defun" "lambda" "fn" "set!"
-    "let" "let*" "letrec" "begin" "do"
+    "define" "def" "defun" "defn" "lambda" "fn" "set!"
+    "let" "let*" "letrec" "begin" "progn" "do" "while"
+    "let-values" "let*-values" "define-values" "define-syntax"
+    "match" "match*" "defmulti" "defmethod" "async" "await"
     "and" "or"
     "quote" "quasiquote" "unquote" "unquote-splicing"
     "define-record-type" "defmacro" "defagent" "deftool"
