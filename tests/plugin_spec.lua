@@ -37,7 +37,10 @@ for _, name in ipairs({
   "db/open",
   "workflow/mcp-handle",
 }) do
-  assert(query:find('"' .. name .. '"', 1, true), "documented symbol missing from highlights: " .. name)
+  assert(
+    query:find('"' .. name .. '"', 1, true),
+    "documented symbol missing from highlights: " .. name
+  )
 end
 assert(not query:find('"with-budget"', 1, true), "obsolete with-budget form is still highlighted")
 assert(query:find('"llm/with-budget"', 1, true), "llm/with-budget is missing")
