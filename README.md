@@ -22,7 +22,13 @@ Neovim support for Sema (`.sema`) source files: filetype detection, tree-sitter 
 {
   "sema-lisp/sema.nvim",
   ft = "sema",
-  dependencies = { "nvim-treesitter/nvim-treesitter" },
+  dependencies = {
+    {
+      "nvim-treesitter/nvim-treesitter",
+      lazy = false,
+      build = ":TSUpdate",
+    },
+  },
 }
 ```
 
@@ -31,9 +37,15 @@ Neovim support for Sema (`.sema`) source files: filetype detection, tree-sitter 
 ```lua
 use({
   "sema-lisp/sema.nvim",
-  requires = { "nvim-treesitter/nvim-treesitter" },
+  requires = {
+    { "nvim-treesitter/nvim-treesitter", opt = false, run = ":TSUpdate" },
+  },
 })
 ```
+
+The current `nvim-treesitter` `main` branch requires Neovim 0.12. On Neovim
+0.11, pin that dependency to its compatibility branch with `branch = "master"`.
+This plugin supports both parser-registration APIs.
 
 Then run `:TSInstall sema` once to fetch and compile the grammar (it uses the
 pinned [`sema-lisp/tree-sitter-sema`](https://github.com/sema-lisp/tree-sitter-sema)

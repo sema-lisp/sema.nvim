@@ -6,16 +6,60 @@
 -- ── Tree-sitter ─────────────────────────────────────────────────────────
 -- Register the tree-sitter-sema parser so `:TSInstall sema` fetches and
 -- compiles it. Highlight queries ship under queries/sema/ on the runtimepath.
-local ok_ts, parsers = pcall(require, "nvim-treesitter.parsers")
-if ok_ts and type(parsers.get_parser_configs) == "function" then
-  parsers.get_parser_configs().sema = {
-    install_info = {
-      url = "https://github.com/sema-lisp/tree-sitter-sema",
-      files = { "src/parser.c", "src/scanner.c" },
-      branch = "main",
-    },
-    filetype = "sema",
-  }
+-- nvim-treesitter's current main branch exposes its parser table directly;
+-- the compatibility `master` branch still uses `get_parser_configs()`.
+local sema_parser = {
+  install_info = {
+    url = "https://github.com/sema-lisp/tree-sitter-sema",
+    files = { "src/parser.c", "src/scanner.c" },
+    branch = "main",
+  },
+  filetype = "sema",
+}
+
+local function register_parser()
+  local ok_ts, parsers = pcall(require, "nvim-treesitter.parsers")
+  if not ok_ts then
+    return
+  end
+
+  if type(parsers.get_parser_configs) == "function" then
+    parsers.get_parser_configs().sema = sema_parser
+  else
+    parsers.sema = sema_parser
+  end
+end
+
+register_parser()
+
+local treesitter_group = vim.api.nvim_create_augroup("sema_treesitter", { clear = true })
+vim.api.nvim_create_autocmd("User", {
+  group = treesitter_group,
+  pattern = "TSUpdate",
+  callback = register_parser,
+})
+
+local function start_highlighting(args)
+  if vim.treesitter and vim.treesitter.start then
+    pcall(vim.treesitter.start, args.buf, "sema")
+  end
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = treesitter_group,
+  pattern = "sema",
+  callback = start_highlighting,
+})
+
+-- A filetype-triggered plugin is loaded while the first FileType event is
+-- already being handled, so start that buffer explicitly as well.
+if vim.bo.filetype == "sema" then
+  local initial_buf = vim.api.nvim_get_current_buf()
+  vim.schedule(function()
+    if vim.api.nvim_buf_is_valid(initial_buf) then
+      start_highlighting({ buf = initial_buf })
+    end
+  end)
 end
 
 -- ── Language server (`sema lsp`) ────────────────────────────────────────

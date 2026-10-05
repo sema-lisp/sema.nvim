@@ -22,3 +22,12 @@ jobs:
         uses: lunarmodules/luacheck@v1
         with:
           args: . --no-color -q
+
+      - name: Set up Neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          version: stable
+          neovim: true
+
+      - name: Test plugin registration
+        run: nvim --headless -u NONE '+lua dofile("tests/plugin_spec.lua")' +qa
